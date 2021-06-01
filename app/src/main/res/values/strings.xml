@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">Barber Shop</string>
+    <string name="Google">Google</string>
+    <string name="btnSignIn">Inicia sesión con Google</string>
+    <string name="barber_shop">Barber Shop</string>
+    <string name="before_clicking">Before Clicking</string>
+    <string name="todo">TODO</string>
+    <string name="id">ID</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
 </resources>
