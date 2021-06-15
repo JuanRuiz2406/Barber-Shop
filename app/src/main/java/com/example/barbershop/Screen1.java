@@ -62,13 +62,7 @@ public class Screen1 extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
     }
-
-    private void setAdapter() {
-        RecyclerAdapter adapter = new RecyclerAdapter(appointmentList);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-    }
-
+    
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -89,4 +83,11 @@ public class Screen1 extends Fragment {
         appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
         appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
     }
+
+    private void setAdapter() {
+        RecyclerAdapter adapter = new RecyclerAdapter(appointmentList);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+    }
+
 }
