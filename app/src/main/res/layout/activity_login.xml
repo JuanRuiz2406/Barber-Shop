@@ -1,45 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/bg_login"
     tools:context=".LoginActivity">
 
-    <TextView
-        android:id="@+id/simpleTextView"
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/logo_main"
+            android:contentDescription="@string/logo_login">
+        </ImageView>
+        
+        <TextView
+            android:id="@+id/text_slogan"
+            android:text="@string/text_slogan"
+            android:gravity="center"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white">
+
+        </TextView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginStart="121dp"
-        android:layout_marginTop="216dp"
-        android:layout_marginEnd="121dp"
-        android:text="Barber Shop"
-        android:textColor="#f00"
-        android:textSize="25sp"
-        android:textStyle="bold|italic"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_editor_absoluteX="121dp"
-        app:layout_editor_absoluteY="152dp" />
+        android:weightSum="2"
+        android:gravity="center"
+        >
 
-    <Button
-        android:id="@+id/btnSignIn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="76dp"
-        android:layout_marginBottom="340dp"
-        android:background="@drawable/btn_bg"
-        android:drawablePadding="10dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:text="@string/btnSignIn"
-        android:textAlignment="textStart"
-        android:textAllCaps="false"
-        app:drawableLeftCompat="@drawable/ic_google"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <info.hoang8f.widget.FButton
+            android:id="@+id/btnSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="20dp"
+            android:drawableLeft="@drawable/ic_google"
+            android:drawablePadding="0dp"
+            android:minHeight="50dp"
+            android:minWidth="200dp"
+            android:paddingLeft="30dp"
+            android:paddingRight="20dp"
+            android:paddingTop="-5dp"
+            android:text="@string/btnSignIn"
+            android:textColor="@android:color/white"/>
 
+    </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
