@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private GoogleSignInClient mGoogleSignInClient;
     private Button btnSignIn;
+    private FirebaseAuth.AuthStateListener mAuthStateListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,18 @@ public class LoginActivity extends AppCompatActivity {
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+        //Controlar el estado del usuario
+        mAuthStateListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                if (firebaseAuth.getCurrentUser() != null){ //si no es null redirigir
+                    Intent intentMainActivity= new Intent(getApplicationContext(), MainActivity.class);
+                    intentMainActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intentMainActivity);
+                }
+            }
+        };
     }
 
     private void signIn() {
@@ -106,11 +119,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        FirebaseUser user = mAuth.getCurrentUser();
-        if(user!=null){
-            Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(mainActivity);
-        }
+        mAuth.addAuthStateListener(mAuthStateListener);
         super.onStart();
     }
 
