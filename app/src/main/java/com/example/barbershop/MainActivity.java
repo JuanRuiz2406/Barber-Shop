@@ -1,10 +1,5 @@
 package com.example.barbershop;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.viewpager2.widget.ViewPager2;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +8,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -42,16 +42,11 @@ public class MainActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private GoogleSignInOptions gso;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        /* Inicio Elvin*/
 
-        //inicializando variables
         image_user = findViewById(R.id.image_user);
         text_ID = findViewById(R.id.text_ID);
         text_name = findViewById(R.id.text_name);
@@ -62,17 +57,13 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
-        //Configurar las gso para google signIn con el fin de luego desloguear de google
         gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.default_web_client_id)).requestEmail().build();
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
-        //Settear datos
         text_ID.setText(currentUser.getUid());
         text_name.setText(currentUser.getDisplayName());
         text_email.setText(currentUser.getEmail());
         Glide.with(this).load(currentUser.getPhotoUrl()).into(image_user);
-
-        /* Cierre Elvin*/
 
         tabLayout = findViewById(R.id.tab_layout);
         pager2 = findViewById(R.id.view_pager2);
@@ -111,25 +102,24 @@ public class MainActivity extends AppCompatActivity {
         });
 
         button_logout.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                //Cerrar session con Firebase
+
                 mAuth.signOut();
 
                 mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        //Abrir MainActivity con SigIn button
-                        if(task.isSuccessful()){
 
-                            //Abrir MainActivity
+                        if (task.isSuccessful()) {
                             Intent loginActivity = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(loginActivity);
-
                             MainActivity.this.finish();
-                        }else{
-                            Toast.makeText(getApplicationContext(), "No se pudo cerrar sesión con google",
-                                    Toast.LENGTH_LONG).show();
+
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Could not log out with google", Toast.LENGTH_LONG).show();
                         }
                     }
                 });
@@ -137,33 +127,37 @@ public class MainActivity extends AppCompatActivity {
         });
 
         button_delete_account.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
-                //obtener el usuario actual
+
                 final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                // Get the account
-                GoogleSignInAccount signInAccount =
-                        GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+
+                GoogleSignInAccount signInAccount = GoogleSignIn.getLastSignedInAccount(getApplicationContext());
+
                 if (signInAccount != null) {
-                    AuthCredential credential =
-                            GoogleAuthProvider.getCredential(signInAccount.getIdToken(), null);
-                    //Re-autenticar el usuario para eliminarlo
+
+                    AuthCredential credential = GoogleAuthProvider.getCredential(signInAccount.getIdToken(), null);
+
                     user.reauthenticate(credential).addOnCompleteListener(new OnCompleteListener<Void>() {
+
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+
                             if (task.isSuccessful()) {
-                                //Eliminar el usuario
+
                                 user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+
                                     @Override
                                     public void onSuccess(Void aVoid) {
-                                        Log.d("MainActivity", "onSuccess:Usuario Eliminado");
-                                        //llamar al metodo signOut para salir de aqui
+
+                                        Log.d("MainActivity", "onSuccess: User Deleted");
                                         signOut();
+
                                     }
                                 });
                             } else {
-                                Log.e("MainActivity", "onComplete: Error al eliminar el usuario",
-                                        task.getException());
+                                Log.e("MainActivity", "onComplete: Failed to delete user", task.getException());
                             }
                         }
                     });
@@ -171,21 +165,23 @@ public class MainActivity extends AppCompatActivity {
                     Log.d("MainActivity", "Error: reAuthenticateUser: user account is null");
                 }
             }
-        });//fin onClick
+        });
     }
 
     private void signOut() {
-        //sign out de firebase
+
         FirebaseAuth.getInstance().signOut();
-        //sign out de "google sign in"
+
         mGoogleSignInClient.signOut().addOnCompleteListener(new OnCompleteListener<Void>() {
+
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                //regresar al login screen
+
                 Intent IntentLoginActivity = new Intent(getApplicationContext(), LoginActivity.class);
                 IntentLoginActivity.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(IntentLoginActivity);
                 MainActivity.this.finish();
+
             }
         });
     }
