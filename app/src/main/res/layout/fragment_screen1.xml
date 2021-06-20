@@ -1,20 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Screen1">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Screen1"
+    android:background="#ECECEC">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="Screen #1" />
-
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/screen1"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
-</FrameLayout>
+    <com.tuann.floatingactionbuttonexpandable.FloatingActionButtonExpandable
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="20dp"
+        app:fab_bg_color="#03A9F4"
+        app:fab_content="Nueva Cita"
+        app:fab_duration="200"
+        app:fab_icon="@drawable/ic_add_24" />
+
+</RelativeLayout>

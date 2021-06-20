@@ -72,9 +72,9 @@ public class MainActivity extends AppCompatActivity {
         adapter = new FragmentAdapter(fm, getLifecycle());
         pager2.setAdapter(adapter);
 
-        tabLayout.addTab(tabLayout.newTab().setText("Clientes con Citas Agendadas"));
-        tabLayout.addTab(tabLayout.newTab().setText("Actualizar Cita (Float BTN)"));
+        tabLayout.addTab(tabLayout.newTab().setText("Citas Agendadas"));
         tabLayout.addTab(tabLayout.newTab().setText("Citas Pendientes"));
+        tabLayout.addTab(tabLayout.newTab().setText("Perfil"));
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
