@@ -3,4 +3,6 @@
     <string name="btnSignIn">Inicia sesión</string>
     <string name="text_slogan">Proyecto final del curso Diseño y Programacion de Plataformas Moviles, hecho con fines académicos. I CICLO 2021 UNA CR</string>
     <string name="logo_login">Logo en login</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

@@ -19,12 +19,10 @@ public class FragmentAdapter extends FragmentStateAdapter {
 
         switch (position) {
             case 1:
-                return new Screen2();
-            case 2:
                 return new Screen3();
-
+            case 2:
+                return new Screen4();
         }
-
         return new Screen1();
     }
 
