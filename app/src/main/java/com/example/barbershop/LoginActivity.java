@@ -80,10 +80,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void signIn() {
-
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
-
     }
 
     @Override
@@ -174,11 +172,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void getPrimaryKey(String email) {
-
-        String[] separated = email.split("@");
-        primaryKey = separated[0];
-        Log.d("Llave", primaryKey);
-
+        primaryKey = email.replaceAll("\\p{Punct}", "");
+        Log.d("key", primaryKey);
     }
 
 }

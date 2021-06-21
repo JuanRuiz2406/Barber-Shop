@@ -3,6 +3,9 @@ package com.example.barbershop.models;
 public class User {
     private String fullName, email, role;
 
+    public User() {
+    }
+
     public User(String fullName, String email, String role) {
         this.fullName = fullName;
         this.email = email;
