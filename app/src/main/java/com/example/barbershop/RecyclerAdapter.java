@@ -8,6 +8,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.barbershop.models.Appointment;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -44,7 +46,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     public void onBindViewHolder(@NonNull @NotNull RecyclerAdapter.MyViewHolder holder, int position) {
         String clientName = appointmentList.get(position).getClientName();
         String date = appointmentList.get(position).getDate();
-        String state = appointmentList.get(position).getState();
+        String state = appointmentList.get(position).getStatus();
 
         holder.clientNameTxt.setText(clientName);
         holder.dateTxt.setText(date);
