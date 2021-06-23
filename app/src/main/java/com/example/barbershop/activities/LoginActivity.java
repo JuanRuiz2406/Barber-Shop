@@ -1,4 +1,4 @@
-package com.example.barbershop;
+package com.example.barbershop.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.barbershop.R;
 import com.example.barbershop.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -43,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     private String primaryKey;
     private FirebaseDatabase database;
     private DatabaseReference userTable;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,11 +120,11 @@ public class LoginActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Log.d(TAG, "signInWithCredential:success");
 
-                    final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
-                    getPrimaryKey(user.getEmail());
+                    getPrimaryKey(currentUser.getEmail());
 
-                    verifyLoginAndReg(user);
+                    verifyLoginAndReg(currentUser);
 
                     Intent mainActivity = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(mainActivity);

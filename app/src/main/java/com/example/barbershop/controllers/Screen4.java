@@ -1,4 +1,4 @@
-package com.example.barbershop;
+package com.example.barbershop.controllers;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.example.barbershop.activities.LoginActivity;
+import com.example.barbershop.R;
 import com.example.barbershop.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

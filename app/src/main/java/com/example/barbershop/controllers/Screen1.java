@@ -1,4 +1,4 @@
-package com.example.barbershop;
+package com.example.barbershop.controllers;
 
 import android.os.Bundle;
 
@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.barbershop.R;
+import com.example.barbershop.adapters.RecyclerAdapter;
 import com.example.barbershop.models.Appointment;
 import com.tuann.floatingactionbuttonexpandable.FloatingActionButtonExpandable;
 

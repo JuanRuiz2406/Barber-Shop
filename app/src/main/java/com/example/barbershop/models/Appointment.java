@@ -1,28 +1,32 @@
 package com.example.barbershop.models;
 
 public class Appointment {
-    private User user;
+    private String user;
     private String clientName;
     private String date;
     private String hour;
     private String status;
+    private String photo_link;
+    private String video_link;
 
     public Appointment() {
     }
 
-    public Appointment(User user, String clientName, String date, String hour, String status) {
+    public Appointment(String user, String clientName, String date, String hour, String status, String photo_link, String video_link) {
         this.user = user;
         this.clientName = clientName;
         this.date = date;
         this.hour = hour;
         this.status = status;
+        this.photo_link = photo_link;
+        this.video_link = video_link;
     }
 
-    public User getUser() {
+    public String getUser() {
         return user;
     }
 
-    public void setUser(User user) {
+    public void setUser(String user) {
         this.user = user;
     }
 
@@ -56,5 +60,21 @@ public class Appointment {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getPhoto_link() {
+        return photo_link;
+    }
+
+    public void setPhoto_link(String photo_link) {
+        this.photo_link = photo_link;
+    }
+
+    public String getVideo_link() {
+        return video_link;
+    }
+
+    public void setVideo_link(String video_link) {
+        this.video_link = video_link;
     }
 }

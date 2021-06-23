@@ -1,10 +1,14 @@
-package com.example.barbershop;
+package com.example.barbershop.adapters;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
+
+import com.example.barbershop.controllers.Screen1;
+import com.example.barbershop.controllers.Screen3;
+import com.example.barbershop.controllers.Screen4;
 
 public class FragmentAdapter extends FragmentStateAdapter {
     public FragmentAdapter(@NonNull @org.jetbrains.annotations.NotNull FragmentManager fragmentManager,
