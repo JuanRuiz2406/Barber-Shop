@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="5dp"
-    tools:context="com.example.barbershop.MainActivity">
+    tools:context="com.example.barbershop.activities.MainActivity">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"

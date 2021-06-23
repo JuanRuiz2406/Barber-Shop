@@ -1,4 +1,4 @@
-package com.example.barbershop;
+package com.example.barbershop.adapters;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +8,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.barbershop.R;
 import com.example.barbershop.models.Appointment;
 
 import org.jetbrains.annotations.NotNull;
