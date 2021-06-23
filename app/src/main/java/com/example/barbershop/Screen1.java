@@ -1,6 +1,5 @@
 package com.example.barbershop;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.barbershop.models.Appointment;
 import com.tuann.floatingactionbuttonexpandable.FloatingActionButtonExpandable;
 
 import org.jetbrains.annotations.NotNull;
@@ -85,8 +85,10 @@ public class Screen1 extends Fragment {
         btnFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(R.id.activityMain, new Screen2());
+                transaction.replace(android.R.id.content, new Screen2());
+                transaction.addToBackStack(null);
                 transaction.commit();
             }
         });
@@ -103,12 +105,13 @@ public class Screen1 extends Fragment {
             }
         });
 
-        setAppointmentInfo();
+        //setAppointmentInfo();
         setAdapter();
 
         return view;
     }
 
+    /*
     public void setAppointmentInfo() {
         appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
         appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
@@ -121,6 +124,8 @@ public class Screen1 extends Fragment {
         appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
         appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
     }
+
+     */
 
     private void setAdapter() {
         RecyclerAdapter adapter = new RecyclerAdapter(appointmentList);
