@@ -1,5 +1,6 @@
 package com.example.barbershop.controllers;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,11 @@ import android.view.ViewGroup;
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.RecyclerAdapter;
 import com.example.barbershop.models.Appointment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.tuann.floatingactionbuttonexpandable.FloatingActionButtonExpandable;
 
 import org.jetbrains.annotations.NotNull;
@@ -33,13 +40,17 @@ public class Screen1 extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    private static final String TAG = "MyActivity";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
     private ArrayList<Appointment> appointmentList;
     private RecyclerView recyclerView;
     private FloatingActionButtonExpandable btnFAB;
+
+    private FirebaseDatabase database;
+    private DatabaseReference appointmentTable;
+
 
     public Screen1() {
         // Required empty public constructor
@@ -83,11 +94,13 @@ public class Screen1 extends Fragment {
         recyclerView = view.findViewById(R.id.screen1);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        setAppointmentInfo();
+
         btnFAB = view.findViewById(R.id.fab);
         btnFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Log.e(TAG,"List: " +  appointmentList.size());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(android.R.id.content, new Screen2());
                 transaction.addToBackStack(null);
@@ -106,31 +119,46 @@ public class Screen1 extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-
-        //setAppointmentInfo();
-        setAdapter();
-
         return view;
     }
 
-    /*
     public void setAppointmentInfo() {
-        appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
-        appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
-        appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
-        appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
-        appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
-        appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
-        appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
-        appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
-        appointmentList.add(new Appointment("Juan", "Hoy", "Realizada"));
-        appointmentList.add(new Appointment("Pepe", "Mañana", "Pendiente"));
+        database = FirebaseDatabase.getInstance();
+        appointmentTable = database.getReference("Appointment");
+        appointmentTable.addValueEventListener( new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                appointmentList.clear();
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                    Appointment app = postSnapshot.getValue(Appointment.class);
+                    appointmentList.add(app);
+                }
+                setAdapter();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+
+            }
+
+        });
+
+        /*
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+*/
     }
 
-     */
+
 
     private void setAdapter() {
-        RecyclerAdapter adapter = new RecyclerAdapter(appointmentList);
+        RecyclerAdapter adapter = new RecyclerAdapter(getContext(), appointmentList);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
     }
