@@ -119,10 +119,6 @@ public class Screen1 extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-        Log.e(TAG, "--------------------------------------------------------------------------------");
-
-
-
         return view;
     }
 
@@ -132,7 +128,7 @@ public class Screen1 extends Fragment {
         appointmentTable.addValueEventListener( new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Get Post object and use the values to update the UI
+                appointmentList.clear();
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
                     Appointment app = postSnapshot.getValue(Appointment.class);
                     appointmentList.add(app);
