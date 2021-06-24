@@ -152,7 +152,6 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
                     FragmentManager fm = getActivity().getSupportFragmentManager();
 
-                    // Aqui le pasas el bitmap de la imagen
                     Bundle arguments = new Bundle();
                     arguments.putParcelable("PROFILE_PICTURE", bitmap);
 
@@ -209,7 +208,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     }
 
     public void takeVideo() {
-        String fileName = "new-photo.mp4";
+        String fileName = "new-video.mp4";
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, fileName);
@@ -225,7 +224,9 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
     public void reg() {
 
-        if (dateTextView.getText().toString().isEmpty() || hour == "Elegir" || edit_name.toString().matches("") || imageUri == null) {
+        String sUsername = edit_name.getText().toString();
+
+        if (dateTextView.getText().toString().isEmpty() || hour == "Elegir" || sUsername.matches("") || imageUri == null) {
 
             Toast.makeText(getContext(), "Por favor llena los campos", Toast.LENGTH_SHORT).show();
             return;
@@ -235,21 +236,16 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
         final StorageReference file_name1 = Folder.child("img" + imageUri.getLastPathSegment());
 
-        final StorageReference file_name2 = Folder.child("video" + videoUri.getLastPathSegment());
-
         ProgressDialog mDialog = new ProgressDialog(getContext());
         mDialog.setMessage("Por favor espere...");
         mDialog.show();
 
-        StorageMetadata metadata = new StorageMetadata.Builder()
-                .setContentType("video/mp4")
-                .build();
+        StorageMetadata metadata = new StorageMetadata.Builder().setContentType("video/mp4").build();
 
         file_name1.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull @NotNull Task<UploadTask.TaskSnapshot> task) {
                 if (task.isSuccessful()) {
-
 
                     task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
                         @Override
@@ -257,6 +253,8 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
                             photo_link = task.getResult().toString();
 
                             if (videoUri != null) {
+
+                                final StorageReference file_name2 = Folder.child("video" + videoUri.getLastPathSegment());
 
                                 file_name2.putFile(videoUri, metadata).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                     @Override
@@ -381,7 +379,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        Toast.makeText(getActivity().getApplicationContext(), hours[position], Toast.LENGTH_LONG).show();
+        // Toast.makeText(getActivity().getApplicationContext(), hours[position], Toast.LENGTH_LONG).show();
         hour = hours[position];
 
     }
