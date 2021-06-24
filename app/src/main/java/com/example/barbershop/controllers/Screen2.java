@@ -26,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -36,14 +37,19 @@ import androidx.fragment.app.FragmentManager;
 
 import com.example.barbershop.R;
 import com.example.barbershop.UI.ViewImageExtended;
-import com.example.barbershop.activities.LoginActivity;
 import com.example.barbershop.models.Appointment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Calendar;
@@ -61,7 +67,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     public ViewImageExtended viewImageExtended;
     public Bitmap bitmap = null;
 
-    String[] hours = {"8 AM", "9 AM", "10 AM", "11 AM", "1 PM", "2 PM", "3 PM", "4 PM"};
+    String[] hours = {"Elegir", "8 AM", "9 AM", "10 AM", "11 AM", "1 PM", "2 PM", "3 PM", "4 PM"};
     private String mParam1;
     private String mParam2;
     private FirebaseDatabase database;
@@ -71,9 +77,15 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     private EditText edit_name;
     private String hour;
     private Button btnSubmit;
-    private Button btnCamara;
+    private Button btnPhoto;
+    private Button btnVideo;
     private ImageView imgView;
+    private VideoView videoView;
     private Uri imageUri;
+    private Uri videoUri;
+
+    private String photo_link;
+    private String video_link;
 
     public Screen2() {
 
@@ -118,8 +130,11 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         edit_name = screen2.findViewById(R.id.userName);
         btnSubmit = screen2.findViewById(R.id.btnSubmit);
 
-        btnCamara = screen2.findViewById(R.id.btnCamara);
+        btnPhoto = screen2.findViewById(R.id.btnPhoto);
+        btnVideo = screen2.findViewById(R.id.btnVideo);
         imgView = screen2.findViewById(R.id.imageView);
+        videoView = screen2.findViewById(R.id.playVideo);
+
 
         Spinner spin = screen2.findViewById(R.id.spinner);
         spin.setOnItemSelectedListener(this);
@@ -155,12 +170,20 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         });
 
 
-        btnCamara.setOnClickListener(new View.OnClickListener() {
+        btnPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                openCamara();
+                takePhoto();
             }
         });
+
+        btnVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                takeVideo();
+            }
+        });
+
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -173,8 +196,8 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     }
 
 
-    private void openCamara() {
-        String fileName = "new-photo-name.jpg";
+    private void takePhoto() {
+        String fileName = "new-photo.jpg";
 
         ContentValues values = new ContentValues();
         values.put(MediaStore.Images.Media.TITLE, fileName);
@@ -182,29 +205,145 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         imageUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        startActivityForResult(intent, 1231);
+        startActivityForResult(intent, 200);
+    }
+
+    public void takeVideo() {
+        String fileName = "new-photo.mp4";
+
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE, fileName);
+        values.put(MediaStore.Images.Media.DESCRIPTION, "Video capture by camera");
+
+        videoUri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+
+        Intent intent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, videoUri);
+        startActivityForResult(intent, 201);
+    }
+
+    public void reg() {
+
+        if (dateTextView.getText().toString().isEmpty() || hour == "Elegir" || edit_name.toString().matches("") || imageUri == null) {
+
+            Toast.makeText(getContext(), "Por favor llena los campos", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        StorageReference Folder = FirebaseStorage.getInstance().getReference().child("Appointment");
+
+        final StorageReference file_name1 = Folder.child("img" + imageUri.getLastPathSegment());
+
+        final StorageReference file_name2 = Folder.child("video" + videoUri.getLastPathSegment());
+
+        ProgressDialog mDialog = new ProgressDialog(getContext());
+        mDialog.setMessage("Por favor espere...");
+        mDialog.show();
+
+        StorageMetadata metadata = new StorageMetadata.Builder()
+                .setContentType("video/mp4")
+                .build();
+
+        file_name1.putFile(imageUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<UploadTask.TaskSnapshot> task) {
+                if (task.isSuccessful()) {
+
+
+                    task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<Uri> task) {
+                            photo_link = task.getResult().toString();
+
+                            if (videoUri != null) {
+
+                                file_name2.putFile(videoUri, metadata).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull @NotNull Task<UploadTask.TaskSnapshot> task) {
+
+                                        if (task.isSuccessful()) {
+                                            task.getResult().getStorage().getDownloadUrl().addOnCompleteListener(new OnCompleteListener<Uri>() {
+                                                @Override
+                                                public void onComplete(@NonNull @NotNull Task<Uri> task) {
+                                                    video_link = task.getResult().toString();
+                                                    Appointment newAppointment = new Appointment(currentUser.getEmail().replaceAll("\\p{Punct}", ""), edit_name.getText().toString(), dateTextView.getText().toString(), hour, "Pending", photo_link, video_link);
+
+                                                    String newDate = dateTextView.getText().toString().replaceAll("\\p{Punct}", "");
+                                                    String key = newDate + hour.replaceAll("\\s", "");
+
+                                                    appointmentTable.child(key).setValue(newAppointment);
+                                                }
+                                            });
+
+                                            mDialog.dismiss();
+
+                                            Toast.makeText(getContext(), "Cita registrada con exito :D", Toast.LENGTH_SHORT).show();
+
+                                            getFragmentManager().popBackStack();
+
+                                            getActivity().recreate();
+                                        }
+
+                                    }
+                                });
+
+                            } else {
+                                video_link = "NO_VIDEO";
+                                Appointment newAppointment = new Appointment(currentUser.getEmail().replaceAll("\\p{Punct}", ""), edit_name.getText().toString(), dateTextView.getText().toString(), hour, "Pending", photo_link, video_link);
+
+                                String newDate = dateTextView.getText().toString().replaceAll("\\p{Punct}", "");
+                                String key = newDate + hour.replaceAll("\\s", "");
+
+                                appointmentTable.child(key).setValue(newAppointment);
+
+                                mDialog.dismiss();
+
+                                Toast.makeText(getContext(), "Cita registrada con exito :D", Toast.LENGTH_SHORT).show();
+
+                                getFragmentManager().popBackStack();
+
+                                getActivity().recreate();
+
+                            }
+
+
+                        }
+                    });
+
+
+                }
+            }
+        });
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1231 && resultCode == Activity.RESULT_OK) {
-            try {
-                ContentResolver cr = getActivity().getContentResolver();
+        if (resultCode == Activity.RESULT_OK) {
+
+            if (requestCode == 200) {
                 try {
+                    ContentResolver cr = getActivity().getContentResolver();
+                    try {
 
-                    bitmap = MediaStore.Images.Media.getBitmap(cr, imageUri);
+                        bitmap = MediaStore.Images.Media.getBitmap(cr, imageUri);
 
-                    imgView.setImageBitmap(bitmap);
-                } catch (IOException e) {
+                        imgView.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                } catch (IllegalArgumentException e) {
+                    if (e.getMessage() != null)
+                        Log.e("Exception", e.getMessage());
+                    else
+                        Log.e("Exception", "Exception");
                     e.printStackTrace();
                 }
-            } catch (IllegalArgumentException e) {
-                if (e.getMessage() != null)
-                    Log.e("Exception", e.getMessage());
-                else
-                    Log.e("Exception", "Exception");
-                e.printStackTrace();
+            } else {
+                videoView.setVideoURI(videoUri);
+                videoView.start();
             }
 
         }
@@ -252,51 +391,11 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
     }
 
-    public void reg() {
-
-
-        if(dateTextView.getText().toString().isEmpty() || hour.isEmpty() || edit_name.toString().isEmpty() || imageUri == null) {
-
-            Toast.makeText(getContext(), "Por favor llena los campos", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        ProgressDialog mDialog = new ProgressDialog(getContext());
-        mDialog.setMessage("Por favor espere...");
-        mDialog.show();
-
-        StorageReference Folder = FirebaseStorage.getInstance().getReference().child("Appointment");
-
-        final StorageReference file_name = Folder.child("file" + imageUri.getLastPathSegment());
-
-        file_name.putFile(imageUri).addOnSuccessListener(taskSnapshot -> file_name.getDownloadUrl().addOnSuccessListener(uri -> {
-
-            Appointment newAppointment = new Appointment(currentUser.getEmail().replaceAll("\\p{Punct}", ""), edit_name.getText().toString(), dateTextView.getText().toString(), hour, "Pending", String.valueOf(uri), "NO_VIDEO");
-
-            String newDate = dateTextView.getText().toString().replaceAll("\\p{Punct}", "");
-            String key = newDate + hour.replaceAll("\\s", "");
-
-            appointmentTable.child(key).setValue(newAppointment);
-
-            Log.d("Message", "Everything was uploaded correctly");
-
-            mDialog.dismiss();
-
-            Toast.makeText(getContext(), "Cita registrada con exito :D", Toast.LENGTH_SHORT).show();
-
-
-            getFragmentManager().popBackStack();
-
-            getActivity().recreate();
-
-        }));
-    }
-
     public void askPermission() {
-        if ( ContextCompat.checkSelfPermission( getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission( getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE ) != PackageManager.PERMISSION_GRANTED ) {
-            ActivityCompat.requestPermissions(getActivity(),new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 60);
+        if (ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(getActivity(), android.Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 60);
         } else {
-            openCamara();
+            takePhoto();
         }
     }
 
@@ -311,7 +410,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         }
 
         if (allPermissionsGranted) {
-            openCamara();
+            takePhoto();
         }
     }
 }
