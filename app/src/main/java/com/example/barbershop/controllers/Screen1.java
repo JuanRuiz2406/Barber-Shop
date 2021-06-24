@@ -162,7 +162,7 @@ public class Screen1 extends Fragment {
 
 
     private void setAdapter() {
-        RecyclerAdapter adapter = new RecyclerAdapter(appointmentList);
+        RecyclerAdapter adapter = new RecyclerAdapter(getContext(), appointmentList);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
     }
