@@ -17,6 +17,7 @@ import androidx.fragment.app.Fragment;
 import com.bumptech.glide.Glide;
 import com.example.barbershop.activities.LoginActivity;
 import com.example.barbershop.R;
+import com.example.barbershop.activities.MainActivity;
 import com.example.barbershop.models.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -120,6 +121,15 @@ public class Screen4 extends Fragment {
         userTable.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
+
+                if(currentUser == null){
+
+                    Intent loginActivity = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                    startActivity(loginActivity);
+                    getActivity().finish();
+
+                    Toast.makeText(getActivity().getApplicationContext(), "Necesitamos corroborar que eres tú", Toast.LENGTH_LONG).show();
+                }
 
                 User user = snapshot.child(currentUser.getEmail().replaceAll("\\p{Punct}", "")).getValue(User.class);
 

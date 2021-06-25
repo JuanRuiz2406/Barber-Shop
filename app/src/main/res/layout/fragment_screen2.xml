@@ -13,8 +13,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="Agendar Cita"
+        android:text="AGENDAR CITA"
         android:textSize="25dp"
+        android:textColor="@color/blue"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -101,7 +102,9 @@
             android:layout_marginLeft="25dp"
             android:background="#5676"
             android:hint="Nombre completo"
-            android:textSize="20dp" />
+            android:textSize="20dp"
+            android:maxLength="17"
+            android:digits="abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"/>
     </LinearLayout>
 
     <LinearLayout
@@ -122,6 +125,7 @@
             android:layout_gravity="center"
             android:text="Fotografía"
             android:textSize="20dp"
+            android:textColor="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -132,14 +136,14 @@
             android:layout_height="1dp"
             android:layout_gravity="center"
             android:layout_marginTop="2dp"
-            android:background="#ACA1A1" />
+            android:background="#ACA1A1" />android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
     </LinearLayout>
 
     <LinearLayout
-
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:gravity="center"
         android:orientation="horizontal">
 
 
@@ -147,17 +151,25 @@
             android:id="@+id/btnPhoto"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:text="Tomar foto" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginLeft="100dp" />
 
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="110dp"
+            android:layout_height="80dp"
+         />
+
+    </LinearLayout>
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -176,6 +188,7 @@
             android:layout_gravity="center"
             android:text="Video"
             android:textSize="20dp"
+            android:textColor="@color/green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -219,9 +232,10 @@
 
             android:id="@+id/playVideo"
             android:layout_width="300dp"
-            android:layout_height="220dp"
+            android:layout_height="170dp"
             android:layout_below="@+id/button1"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:clickable="false"/>
 
 
     </LinearLayout>
