@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BarberShop"
         android:usesCleartextTraffic="true"
-        tools:replace="android:allowBackup">
+        tools:replace="android:allowBackup"
+        >
         <service
             android:name=".services.MyFirebaseMessagingService">
             <intent-filter>
@@ -35,7 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.MainActivity" />
+        <activity android:name=".activities.MainActivity" android:windowSoftInputMode="adjustResize"/>
     </application>
 
 </manifest>
