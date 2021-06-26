@@ -1,7 +1,11 @@
 package com.example.barbershop.controllers;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -9,11 +13,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.RecyclerAdapter;
@@ -100,7 +99,7 @@ public class Screen1 extends Fragment {
         btnFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG,"List: " +  appointmentList.size());
+                Log.e(TAG, "List: " + appointmentList.size());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(android.R.id.content, new Screen2());
                 transaction.addToBackStack(null);
@@ -125,11 +124,11 @@ public class Screen1 extends Fragment {
     public void setAppointmentInfo() {
         database = FirebaseDatabase.getInstance();
         appointmentTable = database.getReference("Appointment");
-        appointmentTable.addValueEventListener( new ValueEventListener() {
+        appointmentTable.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 appointmentList.clear();
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Appointment app = postSnapshot.getValue(Appointment.class);
                     appointmentList.add(app);
                 }
@@ -155,10 +154,36 @@ public class Screen1 extends Fragment {
 */
     }
 
-
-
     private void setAdapter() {
+
+        Bundle selectedAppointment = new Bundle();
+
+        Fragment fragment = new Screen2();
+
+        fragment.setArguments(selectedAppointment);
+
         RecyclerAdapter adapter = new RecyclerAdapter(getContext(), appointmentList);
+
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                selectedAppointment.putString("date", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getDate());
+                selectedAppointment.putString("hour", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getHour());
+                selectedAppointment.putString("video_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getVideo_link());
+                selectedAppointment.putString("photo_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getPhoto_link());
+                selectedAppointment.putString("client_Name", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getClientName());
+                selectedAppointment.putString("status", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getStatus());
+
+                fragment.setArguments(selectedAppointment);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(android.R.id.content, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+            }
+        });
+
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
     }
