@@ -6,9 +6,11 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
-    tools:context=".controllers.Screen2">
+    tools:context=".controllers.Screen2"
+    android:clickable="true">
 
     <TextView
+        android:id="@+id/titleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -27,6 +29,33 @@
         android:layout_gravity="center"
         android:layout_marginTop="2dp"
         android:background="#ACA1A1" />
+
+    <LinearLayout
+        android:id="@+id/statusL"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="Estado:"
+            android:textSize="20dp" />
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="40dp"
+
+            android:text="Marcar como realizada"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -217,6 +246,12 @@
             android:layout_below="@+id/editText1"
             android:layout_alignParentLeft="true"
             android:text="Grabar video" />
+        <Button
+            android:id="@+id/btnDown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Descargar video"
+            android:visibility="gone"/>
 
 
     </LinearLayout>
@@ -232,11 +267,10 @@
 
             android:id="@+id/playVideo"
             android:layout_width="300dp"
-            android:layout_height="170dp"
+            android:layout_height="145dp"
             android:layout_below="@+id/button1"
             android:layout_alignParentLeft="true"
             android:clickable="false"/>
-
 
     </LinearLayout>
 
