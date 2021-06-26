@@ -9,6 +9,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.FragmentAdapter;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        FirebaseMessaging. getInstance () .subscribeToTopic ("pushNotifications");
 
         tabLayout = findViewById(R.id.tab_layout);
         pager2 = findViewById(R.id.view_pager2);
