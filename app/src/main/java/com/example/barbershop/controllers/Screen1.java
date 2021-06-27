@@ -100,7 +100,6 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         recyclerView = view.findViewById(R.id.screen1);
         search_bar = view.findViewById(R.id.search_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         setAppointmentInfo();
 
         btnFAB = view.findViewById(R.id.fab);
@@ -173,7 +172,23 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
 
         adapter = new RecyclerAdapter(getContext(), appointmentList);
 
+        adapter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.e("LONG CLICKKKK", "PRESIONADO LARGO");
 
+                Appointment app = appointmentList.get(recyclerView.getChildAdapterPosition(v));
+
+
+                String newDate = app.getDate().replaceAll("\\p{Punct}", "");
+                String key = newDate + app.getHour().replaceAll("\\s", "");
+                Log.e("LONG CLICKKKK", key);
+                //aún falta la validación de que se borre si es admin o si es su propio reporte
+                appointmentTable.child(key).setValue(null);
+                Toast.makeText(getContext(), "Se ha borrado la cita", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
 
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override

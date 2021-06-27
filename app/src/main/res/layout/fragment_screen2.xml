@@ -317,13 +317,22 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/btnSubmit"
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@color/fbutton_color_emerald"
-        android:text="Guardar cita"
-        android:textColor="#F5FBF6" />
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:background="@color/fbutton_color_emerald"
+            android:text="Guardar cita"
+            android:textColor="#F5FBF6" />
+
+    </RelativeLayout>
+
+
+
 
 </LinearLayout>
