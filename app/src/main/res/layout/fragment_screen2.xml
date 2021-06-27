@@ -320,29 +320,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <View android:id="@+id/strut"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_centerHorizontal="true"/>
+
         <Button
             android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:background="@color/fbutton_color_emerald"
             android:text="Guardar cita"
-            android:textColor="#F5FBF6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/strut"
-            android:layout_alignParentRight="true"/>
-        <Button
-            android:id="@+id/btnDelete"
-            android:background="@color/fbutton_color_emerald"
-            android:text="Borrar cita"
-            android:textColor="#F5FBF6"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_alignRight="@id/strut"
-            android:layout_alignParentLeft="true"
-            android:visibility="gone"/>
+            android:textColor="#F5FBF6" />
+
     </RelativeLayout>
 
 
