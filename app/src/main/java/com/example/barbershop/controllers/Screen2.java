@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.barbershop.R;
 import com.example.barbershop.UI.ViewImageExtended;
@@ -93,6 +94,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     private EditText edit_name;
     private String hour;
     private Button btnSubmit;
+    private Button btnDelete;
     private Button btnPhoto;
     private Button btnVideo;
     private Button btnDown;
@@ -157,6 +159,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         dateTextView = screen2.findViewById(R.id.dateTextView);
         edit_name = screen2.findViewById(R.id.userName);
         btnSubmit = screen2.findViewById(R.id.btnSubmit);
+        btnDelete = screen2.findViewById(R.id.btnDelete);
 
         btnPhoto = screen2.findViewById(R.id.btnPhoto);
         btnVideo = screen2.findViewById(R.id.btnVideo);
@@ -183,7 +186,8 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
             btnSubmit.setText("EDITAR CITA");
             btnSubmit.setBackgroundColor(Color.parseColor("#F46426"));
-
+            btnDelete.setVisibility(View.VISIBLE);
+            btnDelete.setBackgroundColor(Color.parseColor("#EA3722"));
             dateTextView.setText(editData.getString("date"));
 
             new DownloadImageFromInternet(screen2.findViewById(R.id.imageView)).execute(editData.getString("photo_link"));
@@ -316,6 +320,12 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
             @Override
             public void onClick(View v) {
                 validations();
+            }
+        });
+        btnDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteAppointment();
             }
         });
 
@@ -526,6 +536,32 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
             @Override
             public void onFailure() {
                 Log.d("onFailure", "Failed");
+            }
+        });
+
+    }
+
+    private void deleteAppointment(){
+        appointmentTable.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+            @Override
+            public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.e("firebase", "Error getting data", task.getException());
+                }else{
+                    for (DataSnapshot postSnapshot : task.getResult().getChildren()) {
+                        Appointment app = postSnapshot.getValue(Appointment.class);
+                        if(app.getPhoto_link().equals(editData.getString("photo_link")) && app.getDate().equals(editData.getString("date")) && app.getHour().equals(editData.getString("hour"))) {
+                            Log.e("firebase", "ENCONTRADOOOO");
+                            postSnapshot.getRef().setValue(null);
+                            Log.e("firebase", "ELIMINADO");
+                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                            transaction.replace(android.R.id.content, new Screen1());
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+
+                        }
+                    }
+                }
             }
         });
 
