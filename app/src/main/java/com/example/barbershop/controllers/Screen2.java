@@ -80,8 +80,9 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     private static final String ARG_PARAM2 = "param2";
     public ViewImageExtended viewImageExtended;
     public Bitmap bitmap = null;
-    String[] hours = {"Elegir", "8 AM", "9 AM", "10 AM", "11 AM", "1 PM", "2 PM", "3 PM", "4 PM"};
+    String[] hours = {"Hora", "8 AM", "9 AM", "10 AM", "11 AM", "1 PM", "2 PM", "3 PM", "4 PM"};
     LinearLayout statusL;
+    LinearLayout statusA;
     private String mParam1;
     private String mParam2;
     private FirebaseDatabase database;
@@ -105,9 +106,12 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
     private Bundle editData;
     private ArrayAdapter hourAdapter;
     private CheckBox checkboxStatus;
+    private CheckBox checkboxStatus2;
+    private CheckBox checkboxStatus3;
     private String status = "PENDIENTE";
 
     private String msg = "Cita registrada con exito :D";
+
     public Screen2() {
 
     }
@@ -160,18 +164,19 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         imgView = screen2.findViewById(R.id.imageView);
         videoView = screen2.findViewById(R.id.playVideo);
         checkboxStatus = screen2.findViewById(R.id.checkBox);
-
+        checkboxStatus2 = screen2.findViewById(R.id.checkBox2);
+        checkboxStatus3 = screen2.findViewById(R.id.checkBox3);
         statusL = screen2.findViewById(R.id.statusL);
-
+        statusA = screen2.findViewById(R.id.statusA);
 
         Spinner spin = screen2.findViewById(R.id.spinner);
         spin.setOnItemSelectedListener(this);
 
         if (editData != null) {
 
-           msg = "Cita actualizada con exito :D";
-
+            msg = "Cita actualizada con exito :D";
             statusL.setVisibility(View.VISIBLE);
+            statusA.setVisibility(View.VISIBLE);
 
             titleTextView.setText("EDITAR CITA");
             titleTextView.setTextColor(Color.parseColor("#F46426"));
@@ -200,10 +205,17 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
             }
 
-            if (editData.getString("status").equals("REALIZADA")) {
+            if (editData.getString("status").equals("PENDIENTE")) {
                 checkboxStatus.setChecked(true);
 
+                status = "PENDIENTE";
+            } else if (editData.getString("status").equals("REALIZADA")) {
+                checkboxStatus2.setChecked(true);
+
                 status = "REALIZADA";
+            } else {
+                checkboxStatus3.setChecked(true);
+                status = "CANCELADA";
             }
 
             checkboxStatus.setOnClickListener(new View.OnClickListener() {
@@ -211,13 +223,44 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
                 @Override
                 public void onClick(View view) {
                     if (checkboxStatus.isChecked()) {
-                        status = "REALIZADA";
-                    } else{
+                        checkboxStatus2.setChecked(false);
+                        checkboxStatus3.setChecked(false);
                         status = "PENDIENTE";
+                    } else {
+                        status = editData.getString("status");
                     }
                 }
             });
 
+            checkboxStatus2.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if (checkboxStatus2.isChecked()) {
+
+                        checkboxStatus.setChecked(false);
+                        checkboxStatus3.setChecked(false);
+
+                        status = "REALIZADA";
+                    } else {
+                        status = editData.getString("status");
+                    }
+                }
+            });
+            checkboxStatus3.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    if (checkboxStatus3.isChecked()) {
+                        checkboxStatus.setChecked(false);
+                        checkboxStatus2.setChecked(false);
+
+                        status = "CANCELADA";
+                    } else {
+                        status = editData.getString("status");
+                    }
+                }
+            });
             String[] hourArray = {editData.getString("hour")};
             hourAdapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_item, hourArray);
 
@@ -426,7 +469,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
         String sUsername = edit_name.getText().toString();
 
-        if (dateTextView.getText().toString().isEmpty() || hour.equals("Elegir") || sUsername.matches("") || imageUri == null) {
+        if (dateTextView.getText().toString().isEmpty() || hour.equals("Hora") || sUsername.matches("") || imageUri == null) {
 
             Toast.makeText(getContext(), "Por favor llena los campos", Toast.LENGTH_SHORT).show();
             return;
@@ -633,7 +676,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         public Uri getImageUri(Context inContext, Bitmap inImage) {
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-            String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Title", null);
+            String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "Foto de perfil", null);
             return Uri.parse(path);
         }
     }
