@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.barbershop.R;
 import com.example.barbershop.models.Appointment;
 
@@ -47,6 +48,10 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
     public void onBindViewHolder(@NonNull @NotNull ExpandableAdapter.MyViewHolder holder, int position) {
 
         Appointment appointment = appointmentList.get(position);
+
+        String image = appointmentList.get(position).getPhoto_link();
+        Glide.with(context).load(image).into(holder.haircutImage);
+
         holder.dateTxt.setText(appointment.getDate());
         holder.hourTxt.setText(appointment.getHour());
         holder.clientNameTxt.setText(appointment.getClientName());
@@ -61,6 +66,8 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView haircutImage;
         TextView dateTxt;
         TextView hourTxt;
         TextView clientNameTxt;
@@ -72,6 +79,7 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
+            haircutImage = itemView.findViewById(R.id.haircutImage);
             dateTxt = itemView.findViewById(R.id.dateTxt);
             hourTxt = itemView.findViewById(R.id.hourTxt);
             clientNameTxt = itemView.findViewById(R.id.clientNameTxt);
