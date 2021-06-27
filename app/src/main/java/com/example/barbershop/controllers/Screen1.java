@@ -1,19 +1,19 @@
 package com.example.barbershop.controllers;
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.widget.SearchView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.RecyclerAdapter;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
  * Use the {@link Screen1#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Screen1 extends Fragment {
+public class Screen1 extends Fragment implements SearchView.OnQueryTextListener {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -47,6 +47,8 @@ public class Screen1 extends Fragment {
     private ArrayList<Appointment> appointmentList;
     private RecyclerView recyclerView;
     private FloatingActionButtonExpandable btnFAB;
+    private SearchView search_bar;
+    private RecyclerAdapter adapter;
 
     private FirebaseDatabase database;
     private DatabaseReference appointmentTable;
@@ -78,9 +80,13 @@ public class Screen1 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
+        //
+
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
+
         }
     }
 
@@ -92,6 +98,7 @@ public class Screen1 extends Fragment {
 
         appointmentList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.screen1);
+        search_bar = view.findViewById(R.id.search_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         setAppointmentInfo();
@@ -100,13 +107,15 @@ public class Screen1 extends Fragment {
         btnFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG,"List: " +  appointmentList.size());
+                Log.e(TAG, "List: " + appointmentList.size());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(android.R.id.content, new Screen2());
                 transaction.addToBackStack(null);
                 transaction.commit();
             }
-        });
+        }
+
+        );
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -119,21 +128,27 @@ public class Screen1 extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
+
         return view;
+    }
+
+    private void initListener() {
+        search_bar.setOnQueryTextListener(this);
     }
 
     public void setAppointmentInfo() {
         database = FirebaseDatabase.getInstance();
         appointmentTable = database.getReference("Appointment");
-        appointmentTable.addValueEventListener( new ValueEventListener() {
+        appointmentTable.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 appointmentList.clear();
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()){
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                     Appointment app = postSnapshot.getValue(Appointment.class);
                     appointmentList.add(app);
                 }
                 setAdapter();
+
             }
 
             @Override
@@ -143,24 +158,59 @@ public class Screen1 extends Fragment {
             }
 
         });
-
-        /*
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-*/
     }
 
 
 
     private void setAdapter() {
-        RecyclerAdapter adapter = new RecyclerAdapter(getContext(), appointmentList);
+
+
+        Bundle selectedAppointment = new Bundle();
+
+        Fragment fragment = new Screen2();
+
+        fragment.setArguments(selectedAppointment);
+
+        adapter = new RecyclerAdapter(getContext(), appointmentList);
+
+
+
+        adapter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                selectedAppointment.putString("date", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getDate());
+                selectedAppointment.putString("hour", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getHour());
+                selectedAppointment.putString("video_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getVideo_link());
+                selectedAppointment.putString("photo_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getPhoto_link());
+                selectedAppointment.putString("client_Name", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getClientName());
+                selectedAppointment.putString("status", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getStatus());
+
+                fragment.setArguments(selectedAppointment);
+                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                transaction.replace(android.R.id.content, fragment);
+                transaction.addToBackStack(null);
+                transaction.commit();
+
+            }
+        });
+
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
+        initListener();
+
+
     }
 
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        adapter.filter(newText);
+        return false;
+    }
 }
