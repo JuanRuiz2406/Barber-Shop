@@ -88,6 +88,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:text="5"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif"
                     android:layout_centerInParent="true"/>
@@ -98,6 +99,7 @@
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
                     android:text="Citas"
+                    android:textColor="@color/white"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif"
                     android:layout_below="@id/appointmentLabel"
@@ -126,12 +128,14 @@
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:src="@drawable/ic_silla"
+                    android:backgroundTint="@color/white"
                     android:layout_centerHorizontal="true"/>
                 <TextView
                     android:id="@+id/idClientLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
+                    android:textColor="@color/white"
                     android:text="1"
                     android:textSize="20sp"
                     android:fontFamily="sans-serif"
@@ -142,6 +146,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:includeFontPadding="false"
+                    android:textColor="@color/white"
                     android:text="Identificacion"
                     android:textSize="14sp"
                     android:fontFamily="sans-serif"
@@ -175,6 +180,7 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/name"
                 android:drawablePadding="10dp"
+                android:editable="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -190,6 +196,7 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_mail"
                 android:drawablePadding="10dp"
+                android:editable="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -205,6 +212,7 @@
                 android:layout_height="wrap_content"
                 android:drawableLeft="@drawable/ic_role"
                 android:drawablePadding="10dp"
+                android:editable="false"
                 />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -241,7 +249,7 @@
                 android:layout_marginBottom="10dp"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
-                android:text="Eliminar Cuenta"
+                android:text="Desactivar Cuenta"
                 android:textAllCaps="false"
                 android:textColor="@color/white"
                 app:drawableLeftCompat="@drawable/ic_delete"
