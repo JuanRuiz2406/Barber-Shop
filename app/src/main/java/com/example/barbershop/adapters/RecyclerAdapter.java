@@ -1,6 +1,9 @@
 package com.example.barbershop.adapters;
 
+import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,19 +16,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.barbershop.R;
 import com.example.barbershop.models.Appointment;
+import com.google.android.gms.actions.ItemListIntents;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements View.OnClickListener {
     Context context;
     private final ArrayList<Appointment> appointmentList;
     private View.OnClickListener listener;
+    private ArrayList<Appointment> originalAppointmentList;
 
     public RecyclerAdapter(Context context, ArrayList<Appointment> appointmentList) {
         this.appointmentList = appointmentList;
         this.context = context;
+        this.originalAppointmentList = new ArrayList<>();
+        originalAppointmentList.addAll(appointmentList);
     }
 
     public void setOnClickListener(View.OnClickListener listener){
@@ -69,6 +78,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
     @Override
     public int getItemCount() {
         return appointmentList.size();
+    }
+
+    public void filter(String strSearch){
+        if(strSearch.length() == 0){
+           appointmentList.clear();
+           appointmentList.addAll(originalAppointmentList);
+        }
+        else{
+            appointmentList.clear();
+            List<Appointment> collect = originalAppointmentList.stream()
+                    .filter(i -> i.getClientName().toLowerCase().contains(strSearch))
+                    .collect(Collectors.toList());
+            appointmentList.addAll(collect);
+        }
+        notifyDataSetChanged();
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
