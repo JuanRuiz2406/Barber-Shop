@@ -55,7 +55,7 @@ public class Screen4 extends Fragment {
     private String mParam2;
 
     private FirebaseAuth mAuth;
-    private TextView text_role, text_name, text_email;
+    private TextView text_role, text_name, text_email,text_name_input;
     private ImageView image_user;
     private Button button_logout;
     private Button button_delete_account;
@@ -106,6 +106,7 @@ public class Screen4 extends Fragment {
         text_role = view_screen4.findViewById(R.id.text_role);
         text_name = view_screen4.findViewById(R.id.text_name);
         text_email = view_screen4.findViewById(R.id.text_email);
+        text_name_input = view_screen4.findViewById(R.id.text_name_input);
         button_logout = view_screen4.findViewById(R.id.btnLogout);
         button_delete_account = view_screen4.findViewById(R.id.btnDeleteAccount);
 
@@ -140,6 +141,7 @@ public class Screen4 extends Fragment {
                 }
                 text_name.setText(user.getFullName());
                 text_email.setText(user.getEmail());
+                text_name_input.setText(user.getFullName());
                 Glide.with(Screen4.this).load(currentUser.getPhotoUrl()).into(image_user);
 
             }
