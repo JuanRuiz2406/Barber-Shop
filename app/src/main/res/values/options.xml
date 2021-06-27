@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="status">
+        <item></item>
+        <item>Aceptada</item>
+        <item>Pendiente</item>
+        <item>Cancelada</item>
+
+    </string-array>
+</resources>

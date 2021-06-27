@@ -41,6 +41,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.barbershop.R;
 import com.example.barbershop.UI.ViewImageExtended;
@@ -183,7 +184,6 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
             btnSubmit.setText("EDITAR CITA");
             btnSubmit.setBackgroundColor(Color.parseColor("#F46426"));
-
             dateTextView.setText(editData.getString("date"));
 
             new DownloadImageFromInternet(screen2.findViewById(R.id.imageView)).execute(editData.getString("photo_link"));
@@ -530,6 +530,7 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
         });
 
     }
+
 
     public void readData(Query ref, final OnGetDataListener listener) {
         listener.onStart();

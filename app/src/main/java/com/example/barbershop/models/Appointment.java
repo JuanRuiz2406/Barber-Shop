@@ -8,6 +8,7 @@ public class Appointment {
     private String status;
     private String photo_link;
     private String video_link;
+    boolean isExpanded;
 
     public Appointment() {
     }
@@ -20,6 +21,8 @@ public class Appointment {
         this.status = status;
         this.photo_link = photo_link;
         this.video_link = video_link;
+        this.isExpanded = false;
+
     }
 
     public String getUser() {
@@ -76,5 +79,13 @@ public class Appointment {
 
     public void setVideo_link(String video_link) {
         this.video_link = video_link;
+    }
+
+    public boolean getIsExpanded() {
+        return isExpanded;
+    }
+
+    public void setIsExpanded(boolean isExpanded) {
+        this.isExpanded = isExpanded;
     }
 }

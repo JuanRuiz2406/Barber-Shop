@@ -1,10 +1,18 @@
 package com.example.barbershop.controllers;
 
+import android.app.DatePickerDialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.DatePicker;
+import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,13 +36,14 @@ import com.tuann.floatingactionbuttonexpandable.FloatingActionButtonExpandable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link Screen1#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Screen1 extends Fragment implements SearchView.OnQueryTextListener {
+public class Screen1 extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -49,9 +58,12 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
     private FloatingActionButtonExpandable btnFAB;
     private SearchView search_bar;
     private RecyclerAdapter adapter;
-
+    private TextView tvDate;
+    private DatePickerDialog.OnDateSetListener setListener;
+    private Spinner comboStatus;
     private FirebaseDatabase database;
     private DatabaseReference appointmentTable;
+    private String selectedFilter = "all";
 
 
     public Screen1() {
@@ -81,6 +93,7 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         super.onCreate(savedInstanceState);
 
 
+
         //
 
         if (getArguments() != null) {
@@ -100,8 +113,86 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         recyclerView = view.findViewById(R.id.screen1);
         search_bar = view.findViewById(R.id.search_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         setAppointmentInfo();
+
+        tvDate = view.findViewById(R.id.tv_date);
+        comboStatus = view.findViewById(R.id.spinnerStatus);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(),R.array.status, android.R.layout.simple_spinner_item);
+        comboStatus.setAdapter(adapter);
+
+        comboStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Toast.makeText(parent.getContext(),"Selecionado: "+parent.getItemAtPosition(position).toString(),Toast.LENGTH_SHORT).show();
+                stateFilter(parent.getItemAtPosition(position).toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+        //barra de busqueda
+        search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+                for(Appointment a: appointmentList){
+                    if(a.getClientName().toLowerCase().contains(newText.toLowerCase())){
+                        appointments.add(a);
+                    }
+                }
+                RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),appointments);
+                recyclerView.setAdapter(recyclerAdapter);
+
+                return false;
+            }
+        });
+
+        Calendar calendar = Calendar.getInstance();
+        final int year = calendar.get(Calendar.YEAR);
+        final int month = calendar.get(Calendar.MONTH);
+        final int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+
+
+        tvDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth,setListener,year,month,day);
+                datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+                datePickerDialog.show();
+            }
+        });
+
+
+        setListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                month = month+1;
+                String mes = String.valueOf(month);
+                String dia = String.valueOf(dayOfMonth);
+                String date;
+                if(month <= 9){
+                    mes="0"+mes;
+                }
+                if(dayOfMonth <= 9){
+                    dia = "0"+dia;
+                }
+                date = mes+"-"+dia+"-"+year;
+                tvDate.setText(date);
+                Toast.makeText(getContext(),date,Toast.LENGTH_SHORT).show();
+                dateFilter(date);
+            }
+
+        };
 
         btnFAB = view.findViewById(R.id.fab);
         btnFAB.setOnClickListener(new View.OnClickListener() {
@@ -132,9 +223,6 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         return view;
     }
 
-    private void initListener() {
-        search_bar.setOnQueryTextListener(this);
-    }
 
     public void setAppointmentInfo() {
         database = FirebaseDatabase.getInstance();
@@ -173,7 +261,23 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
 
         adapter = new RecyclerAdapter(getContext(), appointmentList);
 
+        adapter.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Log.e("LONG CLICKKKK", "PRESIONADO LARGO");
 
+                Appointment app = appointmentList.get(recyclerView.getChildAdapterPosition(v));
+
+
+                String newDate = app.getDate().replaceAll("\\p{Punct}", "");
+                String key = newDate + app.getHour().replaceAll("\\s", "");
+                Log.e("LONG CLICKKKK", key);
+                //aún falta la validación de que se borre si es admin o si es su propio reporte
+                appointmentTable.child(key).setValue(null);
+                Toast.makeText(getContext(), "Se ha borrado la cita", Toast.LENGTH_SHORT).show();
+                return false;
+            }
+        });
 
         adapter.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -197,20 +301,63 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
 
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
-        initListener();
 
 
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
 
-        return false;
+    private void filterList(String status){
+        selectedFilter = status;
+        ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
+
+        for(Appointment a: appointmentList){
+            if(a.getClientName().toLowerCase().contains(status)){
+                filterAppointment.add(a);
+            }
+        }
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
+        recyclerView.setAdapter(recyclerAdapter);
+
+    }
+    private void filterListState(String status){
+        selectedFilter = status;
+        ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
+
+        for(Appointment a: appointmentList){
+            if(a.getStatus().toLowerCase().contains(status.toLowerCase())){
+                filterAppointment.add(a);
+            }
+        }
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
+        recyclerView.setAdapter(recyclerAdapter);
+
+    }
+    private void filterListDate(String status){
+        selectedFilter = status;
+        ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
+
+        for(Appointment a: appointmentList){
+            if(a.getDate().toLowerCase().contains(status.toLowerCase())){
+                filterAppointment.add(a);
+            }
+        }
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
+        recyclerView.setAdapter(recyclerAdapter);
+
     }
 
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        adapter.filter(newText);
-        return false;
+    public void allFilter(String strFilter){
+        selectedFilter = "all";
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),appointmentList);
+        recyclerView.setAdapter(recyclerAdapter);
+
+    }
+    public void stateFilter(String strFilter){
+        filterListState(strFilter);
+
+    }
+
+    public void dateFilter(String strFilter){
+        filterListDate(strFilter);
     }
 }

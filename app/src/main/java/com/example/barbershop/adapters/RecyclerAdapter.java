@@ -1,9 +1,7 @@
 package com.example.barbershop.adapters;
 
-import android.app.Activity;
-import android.content.ClipData;
 import android.content.Context;
-import android.os.Build;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.barbershop.R;
 import com.example.barbershop.models.Appointment;
-import com.google.android.gms.actions.ItemListIntents;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -24,10 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements View.OnClickListener {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements View.OnClickListener, View.OnLongClickListener {
     Context context;
     private final ArrayList<Appointment> appointmentList;
     private View.OnClickListener listener;
+    private View.OnLongClickListener longListener;
     private ArrayList<Appointment> originalAppointmentList;
 
     public RecyclerAdapter(Context context, ArrayList<Appointment> appointmentList) {
@@ -37,10 +35,23 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         originalAppointmentList.addAll(appointmentList);
     }
 
+
     public void setOnClickListener(View.OnClickListener listener){
         this.listener=listener;
     }
+    public void setOnLongClickListener(View.OnLongClickListener longListener) {
+        Log.e("LONG PRESSS", "PRESIONADO LARGO desde recycler");
 
+        this.longListener = longListener;
+    }
+    @Override
+    public boolean onLongClick(View view) {
+        Log.e("LONG CLICKKKK", "LONG CLICK DESDE RECYCLER");
+        if (longListener != null) {
+            longListener.onLongClick(view);
+        }
+        return false;
+    }
     @Override
     public void onClick(View view) {
         if (listener != null) {
@@ -55,6 +66,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         View appointmentView = LayoutInflater.from(parent.getContext()).inflate(R.layout.appointment_item, parent, false);
 
         appointmentView.setOnClickListener(this);
+        appointmentView.setOnLongClickListener(this);
 
         return new MyViewHolder(appointmentView);
     }
@@ -94,6 +106,11 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         }
         notifyDataSetChanged();
     }
+
+
+
+
+
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         private final TextView clientNameTxt;
