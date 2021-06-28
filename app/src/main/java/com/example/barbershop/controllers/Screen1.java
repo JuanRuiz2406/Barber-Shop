@@ -1,5 +1,8 @@
 package com.example.barbershop.controllers;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,8 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.barbershop.R;
+import com.example.barbershop.activities.LoginActivity;
 import com.example.barbershop.adapters.RecyclerAdapter;
 import com.example.barbershop.models.Appointment;
+import com.example.barbershop.models.User;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -49,11 +58,14 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
     private FloatingActionButtonExpandable btnFAB;
     private SearchView search_bar;
     private RecyclerAdapter adapter;
-
     private FirebaseDatabase database;
+    private FirebaseAuth mAuth;
     private DatabaseReference appointmentTable;
-
-
+    private DatabaseReference userTable;
+    private boolean deleteItemConfirmed = false;
+    private boolean deleteUserAuth = false;
+    private User user;
+    private String userKey;
     public Screen1() {
         // Required empty public constructor
     }
@@ -106,7 +118,6 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         btnFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e(TAG, "List: " + appointmentList.size());
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();
                 transaction.replace(android.R.id.content, new Screen2());
                 transaction.addToBackStack(null);
@@ -159,10 +170,7 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         });
     }
 
-
-
     private void setAdapter() {
-
 
         Bundle selectedAppointment = new Bundle();
 
@@ -175,17 +183,51 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
         adapter.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                Log.e("LONG CLICKKKK", "PRESIONADO LARGO");
-
                 Appointment app = appointmentList.get(recyclerView.getChildAdapterPosition(v));
+                mAuth = FirebaseAuth.getInstance();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                database = FirebaseDatabase.getInstance();
+                userTable = database.getReference("User");
+                userTable.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                        if(currentUser == null){
 
+                            Intent loginActivity = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                            startActivity(loginActivity);
+                            getActivity().finish();
 
-                String newDate = app.getDate().replaceAll("\\p{Punct}", "");
-                String key = newDate + app.getHour().replaceAll("\\s", "");
-                Log.e("LONG CLICKKKK", key);
-                //aún falta la validación de que se borre si es admin o si es su propio reporte
-                appointmentTable.child(key).setValue(null);
-                Toast.makeText(getContext(), "Se ha borrado la cita", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity().getApplicationContext(), "Necesitamos corroborar que eres tú", Toast.LENGTH_LONG).show();
+                        }
+                        userKey = currentUser.getEmail().replaceAll("\\p{Punct}", "");
+                        user = task.getResult().child(userKey).getValue(User.class);
+                        if(app.getUser().equals(userKey) || user.getRole().equals("Administrator")){
+
+                            AlertDialog.Builder alertBuilder = new AlertDialog.Builder(getContext());
+                            alertBuilder.setMessage("Desea eliminar esta cita?").setCancelable(false)
+                                    .setPositiveButton("Si", new DialogInterface.OnClickListener(){
+
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            String newDate = app.getDate().replaceAll("\\p{Punct}", "");
+                                            String key = newDate + app.getHour().replaceAll("\\s", "");
+                                            appointmentTable.child(key).setValue(null);
+                                        }
+                                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.cancel();
+                                }
+                            });
+                            AlertDialog alert = alertBuilder.create();
+                            alert.setTitle("Eliminar Cita");
+                            alert.show();
+                        } else {
+                            Toast.makeText(getContext(), "Solo puedes borrar tus propias citas", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
                 return false;
             }
         });
@@ -194,18 +236,50 @@ public class Screen1 extends Fragment implements SearchView.OnQueryTextListener 
             @Override
             public void onClick(View view) {
 
-                selectedAppointment.putString("date", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getDate());
-                selectedAppointment.putString("hour", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getHour());
-                selectedAppointment.putString("video_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getVideo_link());
-                selectedAppointment.putString("photo_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getPhoto_link());
-                selectedAppointment.putString("client_Name", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getClientName());
-                selectedAppointment.putString("status", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getStatus());
+                Appointment app = appointmentList.get(recyclerView.getChildAdapterPosition(view));
+                mAuth = FirebaseAuth.getInstance();
+                FirebaseUser currentUser = mAuth.getCurrentUser();
+                database = FirebaseDatabase.getInstance();
+                userTable = database.getReference("User");
+                userTable.get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull @NotNull Task<DataSnapshot> task) {
+                        if(currentUser == null){
 
-                fragment.setArguments(selectedAppointment);
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-                transaction.replace(android.R.id.content, fragment);
-                transaction.addToBackStack(null);
-                transaction.commit();
+                            Intent loginActivity = new Intent(getActivity().getApplicationContext(), LoginActivity.class);
+                            startActivity(loginActivity);
+                            getActivity().finish();
+
+                            Toast.makeText(getActivity().getApplicationContext(), "Necesitamos corroborar que eres tú", Toast.LENGTH_LONG).show();
+                        }
+                        userKey = currentUser.getEmail().replaceAll("\\p{Punct}", "");
+                        user = task.getResult().child(userKey).getValue(User.class);
+
+                        Log.e(TAG, "KEY " + userKey);
+                        Log.e(TAG, "USER IN APP " + app.getUser());
+                        if(app.getUser().equals(userKey) || user.getRole().equals("Administrator")){
+                            selectedAppointment.putString("date", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getDate());
+                            selectedAppointment.putString("hour", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getHour());
+                            selectedAppointment.putString("video_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getVideo_link());
+                            selectedAppointment.putString("photo_link", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getPhoto_link());
+                            selectedAppointment.putString("client_Name", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getClientName());
+                            selectedAppointment.putString("status", appointmentList.get(recyclerView.getChildAdapterPosition(view)).getStatus());
+
+                            fragment.setArguments(selectedAppointment);
+                            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                            transaction.replace(android.R.id.content, fragment);
+                            transaction.addToBackStack(null);
+                            transaction.commit();
+                        } else {
+                            Toast.makeText(getContext(), "Solo puedes editar tus propias citas", Toast.LENGTH_SHORT).show();
+                        }
+
+                    }
+                });
+
+
+
+
 
             }
         });
