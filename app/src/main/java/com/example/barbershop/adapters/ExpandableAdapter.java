@@ -1,6 +1,7 @@
 package com.example.barbershop.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
@@ -9,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.barbershop.R;
 import com.example.barbershop.models.Appointment;
 
@@ -47,9 +50,31 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
     public void onBindViewHolder(@NonNull @NotNull ExpandableAdapter.MyViewHolder holder, int position) {
 
         Appointment appointment = appointmentList.get(position);
+
+        String image = appointmentList.get(position).getPhoto_link();
+        Glide.with(context).load(image).into(holder.haircutImage);
+
         holder.dateTxt.setText(appointment.getDate());
         holder.hourTxt.setText(appointment.getHour());
         holder.clientNameTxt.setText(appointment.getClientName());
+
+        String video = appointmentList.get(position).getVideo_link();
+
+        if (!video.equals("NO_VIDEO")) {
+            holder.videoView.setVideoURI(Uri.parse(video));
+
+            holder.videoIcon.setVisibility(View.VISIBLE);
+            holder.videoView.setVisibility(View.VISIBLE);
+            holder.btnDownloadVideo.setVisibility(View.VISIBLE);
+
+            holder.videoView.start();
+        }
+        else {
+            holder.videoIcon.setVisibility(View.GONE);
+            holder.videoView.setVisibility(View.GONE);
+            holder.btnDownloadVideo.setVisibility(View.GONE);
+
+        }
 
         boolean isVisible = appointment.getIsExpanded();
         holder.constraintlayout.setVisibility(isVisible ? View.VISIBLE : View.GONE);
@@ -61,9 +86,15 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView haircutImage;
         TextView dateTxt;
         TextView hourTxt;
         TextView clientNameTxt;
+
+        ImageView videoIcon;
+        Button btnDownloadVideo;
+        VideoView videoView;
 
         ConstraintLayout constraintlayout;
         ConstraintLayout cardLayout;
@@ -72,9 +103,14 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
 
         public MyViewHolder(@NonNull @NotNull View itemView) {
             super(itemView);
+            haircutImage = itemView.findViewById(R.id.haircutImage);
             dateTxt = itemView.findViewById(R.id.dateTxt);
             hourTxt = itemView.findViewById(R.id.hourTxt);
             clientNameTxt = itemView.findViewById(R.id.clientNameTxt);
+
+            videoIcon = itemView.findViewById(R.id.videoIcon);
+            btnDownloadVideo = itemView.findViewById(R.id.btnDownloadVideo);
+            videoView = itemView.findViewById(R.id.videoView);
 
             constraintlayout = itemView.findViewById(R.id.expandedLayout);
             cardLayout = itemView.findViewById(R.id.card);

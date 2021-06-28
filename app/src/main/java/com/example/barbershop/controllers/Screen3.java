@@ -14,6 +14,12 @@ import android.view.ViewGroup;
 import com.example.barbershop.R;
 import com.example.barbershop.adapters.ExpandableAdapter;
 import com.example.barbershop.models.Appointment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -33,6 +39,9 @@ public class Screen3 extends Fragment {
     RecyclerView recyclerView;
     ArrayList<Appointment> appointmentList;
     ExpandableAdapter expandableAdapter;
+
+    private FirebaseDatabase database;
+    private Query appointmentTable;
 
     public Screen3() {
         // Required empty public constructor
@@ -74,12 +83,27 @@ public class Screen3 extends Fragment {
     }
 
     public void setAppointmentsInfo() {
+        database = FirebaseDatabase.getInstance();
+        appointmentTable = database.getReference().child("Appointment").orderByChild("status").equalTo("PENDIENTE");
+        appointmentTable.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                appointmentList.clear();
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                    Appointment app = postSnapshot.getValue(Appointment.class);
+                    appointmentList.add(app);
+                }
+                setAdapter();
 
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
-        appointmentList.add(new Appointment("user", "Juan", "23/06/2021","5:00pm",  "Realizada", "img", "video"));
+            }
 
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+
+            }
+
+        });
     }
 
     private void setAdapter() {

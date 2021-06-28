@@ -7,13 +7,11 @@
     tools:context=".controllers.Screen1"
     android:background="#ECECEC">
 
-    <!-- TODO: Update blank fragment layout -->
-
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:queryHint="Buscar titulo"
+        app:queryHint="Buscar Cliente"
         app:iconifiedByDefault="false"
         />
 
