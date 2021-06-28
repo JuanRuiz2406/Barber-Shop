@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.barbershop.R;
+import com.example.barbershop.controllers.Screen1;
 import com.example.barbershop.models.Appointment;
+import com.google.android.gms.common.data.DataHolder;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -23,16 +25,18 @@ import java.util.stream.Collectors;
 
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyViewHolder> implements View.OnClickListener, View.OnLongClickListener {
     Context context;
-    private final ArrayList<Appointment> appointmentList;
+    private ArrayList<Appointment> appointmentList;
     private View.OnClickListener listener;
     private View.OnLongClickListener longListener;
-    private ArrayList<Appointment> originalAppointmentList;
+    private ArrayList<Appointment> orinalAppointmentList;
+    private static Screen1.RecyclerViewClickListener itemListener;
+
+
 
     public RecyclerAdapter(Context context, ArrayList<Appointment> appointmentList) {
         this.appointmentList = appointmentList;
         this.context = context;
-        this.originalAppointmentList = new ArrayList<>();
-        originalAppointmentList.addAll(appointmentList);
+        this.orinalAppointmentList = appointmentList;
     }
 
 
@@ -92,24 +96,14 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         return appointmentList.size();
     }
 
-    public void filter(String strSearch){
-        if(strSearch.length() == 0){
-           appointmentList.clear();
-           appointmentList.addAll(originalAppointmentList);
-        }
-        else{
-            appointmentList.clear();
-            List<Appointment> collect = originalAppointmentList.stream()
-                    .filter(i -> i.getClientName().toLowerCase().contains(strSearch))
-                    .collect(Collectors.toList());
-            appointmentList.addAll(collect);
-        }
+
+
+    public void updateList(ArrayList<Appointment> list){
+        Log.e("Size", String.valueOf(list.size()));
+        appointmentList = list;
+        Log.e(" A A Size", String.valueOf(appointmentList.size()));
         notifyDataSetChanged();
     }
-
-
-
-
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -118,6 +112,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
         private final TextView stateTxt;
         private final TextView hourTxt;
         private final ImageView imageView;
+
+
 
         public MyViewHolder(final View view) {
             super(view);
@@ -129,4 +125,21 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.MyView
 
         }
     }
+
+    public static class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public ItemViewHolder(View convertView) {
+            super(convertView);
+            convertView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            itemListener.recyclerViewListClicked(v, this.getPosition());
+
+        }
+    }
+
+
 }
+
+
