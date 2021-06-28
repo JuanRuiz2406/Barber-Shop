@@ -2,7 +2,7 @@
 <resources>
 
     <string-array name="status">
-        <item></item>
+        <item>Selecione Estado</item>
         <item>Aceptada</item>
         <item>Pendiente</item>
         <item>Cancelada</item>

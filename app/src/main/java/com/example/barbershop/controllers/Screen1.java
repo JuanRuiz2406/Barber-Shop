@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -79,6 +80,11 @@ public class Screen1 extends Fragment {
     private User user;
     private String userKey;
     private String selectedFilter = "all";
+    private String fecha="";
+    private String estado="";
+    private String name="";
+    private Button btnClose;
+    private Button btnSearch;
 
     public Screen1() {
         // Required empty public constructor
@@ -126,6 +132,8 @@ public class Screen1 extends Fragment {
         appointmentList = new ArrayList<>();
         recyclerView = view.findViewById(R.id.screen1);
         search_bar = view.findViewById(R.id.search_bar);
+        btnClose = view.findViewById(R.id.btn_clean);
+        btnSearch = view.findViewById(R.id.btn_search);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         setAppointmentInfo();
 
@@ -138,8 +146,12 @@ public class Screen1 extends Fragment {
         comboStatus.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(parent.getContext(),"Selecionado: "+parent.getItemAtPosition(position).toString(),Toast.LENGTH_SHORT).show();
-                stateFilter(parent.getItemAtPosition(position).toString());
+                if(position != 0){
+                    estado = parent.getItemAtPosition(position).toString();
+                    Toast.makeText(getContext(),""+name+fecha+estado,Toast.LENGTH_LONG);
+                }else{
+                    filterList(name,fecha,"");
+                }
             }
 
             @Override
@@ -157,14 +169,17 @@ public class Screen1 extends Fragment {
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                ArrayList<Appointment> appointments = new ArrayList<Appointment>();
+                /*ArrayList<Appointment> appointments = new ArrayList<Appointment>();
                 for(Appointment a: appointmentList){
                     if(a.getClientName().toLowerCase().contains(newText.toLowerCase())){
                         appointments.add(a);
                     }
                 }
                 RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),appointments);
-                recyclerView.setAdapter(recyclerAdapter);
+                recyclerView.setAdapter(recyclerAdapter);*/
+
+                name = newText;
+                Toast.makeText(getContext(),""+name+fecha+estado,Toast.LENGTH_LONG);
 
                 return false;
             }
@@ -202,11 +217,26 @@ public class Screen1 extends Fragment {
                 }
                 date = mes+"-"+dia+"-"+year;
                 tvDate.setText(date);
-                Toast.makeText(getContext(),date,Toast.LENGTH_SHORT).show();
-                dateFilter(date);
+                fecha = date;
+                Toast.makeText(getContext(),""+name+fecha+estado,Toast.LENGTH_LONG);
             }
 
         };
+
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fecha = "";
+                tvDate.setText("Filtrar Fecha");
+            }
+        });
+
+        btnSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                filterList(name, fecha, estado);
+            }
+        });
 
         btnFAB = view.findViewById(R.id.fab);
         btnFAB.setOnClickListener(new View.OnClickListener() {
@@ -382,58 +412,65 @@ public class Screen1 extends Fragment {
     }
 
 
-    private void filterList(String status){
-        selectedFilter = status;
+    private void filterList(String name, String date, String status){
+
         ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
 
-        for(Appointment a: appointmentList){
-            if(a.getClientName().toLowerCase().contains(status)){
-                filterAppointment.add(a);
+        filterAppointment.clear();
+
+        if(name != ""){
+            if(status != ""){
+                if(date != ""){
+                    for (Appointment a: appointmentList){
+                        if(a.getClientName().toLowerCase().contains(name.toLowerCase())
+                                && a.getDate().toLowerCase().contains(date.toLowerCase())
+                                && a.getStatus().toLowerCase().contains(status.toLowerCase())){
+                            filterAppointment.add(a);
+                        }
+                    }
+
+                }
+            }else if(date != ""){
+                for(Appointment a: appointmentList){
+                    if(a.getClientName().toLowerCase().contains(name.toLowerCase())
+                            && a.getDate().toLowerCase().contains(date.toLowerCase())){
+                        filterAppointment.add(a);
+                    }
+                }
+
             }
+            for(Appointment a: appointmentList){
+                if(a.getClientName().toLowerCase().contains(name.toLowerCase())){
+                    filterAppointment.add(a);
+                }
+            }
+
+        }else if(status != ""){
+            if(date != ""){
+                for(Appointment a: appointmentList){
+                    if(a.getDate().toLowerCase().contains(date.toLowerCase())
+                            && a.getStatus().toLowerCase().contains(status.toLowerCase())){
+                        filterAppointment.add(a);
+                    }
+                }
+
+            }
+            for(Appointment a: appointmentList) {
+                if (a.getStatus().toLowerCase().contains(status.toLowerCase())) {
+                    filterAppointment.add(a);
+                }
+            }
+        }else if(date != ""){
+            for(Appointment a: appointmentList){
+                if(a.getDate().toLowerCase().contains(date.toLowerCase())){
+                    filterAppointment.add(a);
+                }
+            }
+
         }
+
         RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
         recyclerView.setAdapter(recyclerAdapter);
-
-    }
-    private void filterListState(String status){
-        selectedFilter = status;
-        ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
-
-        for(Appointment a: appointmentList){
-            if(a.getStatus().toLowerCase().contains(status.toLowerCase())){
-                filterAppointment.add(a);
-            }
-        }
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
-        recyclerView.setAdapter(recyclerAdapter);
-
-    }
-    private void filterListDate(String status){
-        selectedFilter = status;
-        ArrayList<Appointment> filterAppointment = new ArrayList<Appointment>();
-
-        for(Appointment a: appointmentList){
-            if(a.getDate().toLowerCase().contains(status.toLowerCase())){
-                filterAppointment.add(a);
-            }
-        }
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),filterAppointment);
-        recyclerView.setAdapter(recyclerAdapter);
-
     }
 
-    public void allFilter(String strFilter){
-        selectedFilter = "all";
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(getContext(),appointmentList);
-        recyclerView.setAdapter(recyclerAdapter);
-
-    }
-    public void stateFilter(String strFilter){
-        filterListState(strFilter);
-
-    }
-
-    public void dateFilter(String strFilter){
-        filterListDate(strFilter);
-    }
 }
