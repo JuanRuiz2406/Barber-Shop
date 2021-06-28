@@ -1,7 +1,10 @@
 package com.example.barbershop.adapters;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
+import android.os.Environment;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.view.LayoutInflater;
@@ -63,6 +66,13 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
         if (!video.equals("NO_VIDEO")) {
             holder.videoView.setVideoURI(Uri.parse(video));
 
+            holder.btnDownloadVideo.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    downloadManager(video);
+                }
+            });
             holder.videoIcon.setVisibility(View.VISIBLE);
             holder.videoView.setVisibility(View.VISIBLE);
             holder.btnDownloadVideo.setVisibility(View.VISIBLE);
@@ -78,6 +88,20 @@ public class ExpandableAdapter extends RecyclerView.Adapter<ExpandableAdapter.My
 
         boolean isVisible = appointment.getIsExpanded();
         holder.constraintlayout.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    private void downloadManager(String url) {
+        DownloadManager.Request request = new DownloadManager.Request(Uri.parse(url));
+        request.setDescription("download");
+        request.setTitle(url.replaceAll("\\p{Punct}", ""));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+            request.allowScanningByMediaScanner();
+            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        }
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "" + url.replaceAll("\\p{Punct}", "") + ".mp4");
+
+        DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        manager.enqueue(request);
     }
 
     @Override
