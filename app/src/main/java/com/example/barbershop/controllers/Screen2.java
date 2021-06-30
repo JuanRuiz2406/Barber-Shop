@@ -41,7 +41,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.barbershop.R;
 import com.example.barbershop.UI.ViewImageExtended;
@@ -408,7 +407,6 @@ public class Screen2 extends Fragment implements AdapterView.OnItemSelectedListe
 
                                                         getFragmentManager().popBackStack();
 
-                                                        getActivity().recreate();
                                                     }
 
                                                 }
